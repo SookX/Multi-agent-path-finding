@@ -1,6 +1,9 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+
+#define MAX_WIDTH 256
+
 /* Creating the Graph structure (Adjacency List Representation) for the map */
 
 typedef unsigned int uint;
@@ -8,6 +11,7 @@ typedef unsigned int uint;
 struct Node {
     uint x;
     uint y;
+    uint index;
     // Object pointer (will be added later)
     struct Node* next;
 };
@@ -22,7 +26,12 @@ struct Graph {
 };
 typedef struct Graph Graph;
 
-Node* initNode(uint x, uint y);
-Graph* initGraph(uint width, uint height);
+Node* initNode(uint x, uint y, uint index);
+Graph* initGraph(uint width, uint height, uint nodeCount);
+void addEdgeDirectional(Graph* graph, int from, int to);
+void addEdge(Graph* graph, int node1, int node2);
+void graphInfo(Graph* graph);
+
+Graph* buildGraph(char* filename);
 
 #endif

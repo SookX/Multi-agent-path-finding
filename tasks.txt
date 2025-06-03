@@ -1,0 +1,9 @@
+1. Load the file
+2. Build a graph based on this (N x M)
+3. Choose starting points (with keycaps)
+4. Cooperative A* (Multi-agent path finding algorithms)
+
+Most relevant information into a configuration file
+
+Additional:
+    Custom maps, threading
