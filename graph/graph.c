@@ -10,6 +10,7 @@ Node* initNode(uint x, uint y, uint index) {
     newNode->y = y;
     newNode->index = index;
     newNode->next = NULL;
+    newNode->obj = NULL;
 
     return newNode;
 }
