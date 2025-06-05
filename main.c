@@ -11,5 +11,7 @@ int main() {
     printf("Choose number of agents: ");
     scanf("%d", &agents);
 
+    
+
     return 0;
 }
