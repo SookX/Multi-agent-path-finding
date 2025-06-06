@@ -65,6 +65,34 @@ int is_walkable(char a) {
     return a == ' ';
 }
 
+int hasEdge(Graph* graph, int index1, int index2) {
+    Node* curr = graph->adjList[index1];
+    while (curr)
+    {
+        if(curr->index == index2) {
+            return 1;
+        }
+        curr = curr->next;
+    }
+    return 0;
+}
+
+// Later will make better
+void transportNode(Graph* graph, int startNode, int toNode) {
+    if (!graph || !graph->adjList ||
+        !graph->adjList[startNode] || !graph->adjList[toNode]) return;
+
+    if (hasEdge(graph, startNode, toNode) &&
+        graph->adjList[startNode]->obj != NULL &&
+        graph->adjList[toNode]->obj == NULL) {
+
+        graph->adjList[toNode]->obj = graph->adjList[startNode]->obj;
+        graph->adjList[startNode]->obj->currentNode = graph->adjList[toNode];
+        graph->adjList[startNode]->obj = NULL;
+    }
+}
+
+
 Graph* buildGraph(char* filename) {
     FILE *file;
     uint width = 0, height = 0;

@@ -7,9 +7,12 @@ graph.o: graph/graph.c graph/graph.h
 object.o: object/object.c object/object.h
 	gcc -c ./object/object.c -o object.o
 
-main.exe: graph.o object.o main.c
-	gcc main.c graph.o object.o -o main.exe
+pathFinding.o: path-finding/pathFinding.c path-finding/pathFinding.h
+	gcc -c ./path-finding/pathFinding.c -o pathFinding.o
+
+main.exe: graph.o object.o pathFinding.o main.c
+	gcc main.c graph.o object.o pathFinding.o -o main.exe
 
 clean:
-	rm -rf *.o *.out 
+	del *.exe *.o
 	

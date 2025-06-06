@@ -29,7 +29,8 @@ Node* initNode(uint x, uint y, uint index);
 Graph* initGraph(uint width, uint height, uint nodeCount);
 void graphInfo(Graph* graph);
 int getIndexFromCords(Graph* graph, uint x, uint y);
-
+int hasEdge(Graph* graph, int index1, int index2);
+void transportNode(Graph* graph, int startNode, int toNode);
 
 Graph* buildGraph(char* filename);
 
