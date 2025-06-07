@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include<windows.h>
+#include <unistd.h>
 
 #include "../object/object.h"
 #include "../graph/graph.h"
@@ -63,6 +63,7 @@ int minIndex(int* dist, int* visited, int size) {
     return minIndex;
 }
 
+
 void path_finding(Graph* graph, Object** agentList) {
     // Run A* algorithm for each timestep t
     // If there are not confilicts continue one step ahead
@@ -71,10 +72,11 @@ void path_finding(Graph* graph, Object** agentList) {
     int* dist = (int*)malloc(graph->nodeCount * sizeof(int));
     int* parent = (int*)calloc(graph->nodeCount, sizeof(int));
     
+    Object* currentObject = agentList[1];
     for(int i = 0; i < graph->nodeCount; i++) {
         dist[i] = INT_MAX;
     }
-    dist[agentList[0]->currentNode->index] = 0;
+    dist[agentList[1]->currentNode->index] = 0;
     for(int i = 0; i < graph->nodeCount; i++) {
         int u = minIndex(dist, visited, graph->nodeCount);
         visited[u] = 1;
@@ -87,25 +89,25 @@ void path_finding(Graph* graph, Object** agentList) {
         }
     }
 
-    int toIndex = getIndexFromCords(graph, agentList[0]->toX, agentList[0]->toY);
+    int toIndex = getIndexFromCords(graph, currentObject->toX, currentObject->toY);
     int distance = dist[toIndex];
 
     int* path = (int*)malloc(sizeof(int) * graph->nodeCount);
     int pathIndex = 0;
     int currentVertex = toIndex;
 
-    while (currentVertex != agentList[0]->currentNode->index) {
+    while (currentVertex != currentObject->currentNode->index) {
             path[pathIndex++] = currentVertex;
             currentVertex = parent[currentVertex];
     }
-    path[pathIndex++] = agentList[0]->currentNode->index;
+    path[pathIndex++] = currentObject->currentNode->index;
 
     for (int j = pathIndex - 1; j > 0; j--) {
         transportNode(graph, path[j], path[j - 1]); ;
         sleep(1);
-        system("cls");
+        system("clear");
         printMap(graph);
-        }
+    }
     printf("\n");
     free(path);
     free(visited);
