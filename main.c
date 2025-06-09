@@ -54,7 +54,7 @@ int main() {
     Object** agentList = (Object**)malloc(sizeof(Object*) * agents);
 
     // Dummy agent 1
-    uint startX1 = 16, startY1 = 0, toX1 = 5, toY1 = 1;
+    uint startX1 = 0, startY1 = 0, toX1 = 20, toY1 =0;
     int idx1 = getIndexFromCords(graph, startX1, startY1);
     agentList[0] = initObject("A", toX1, toY1);
     agentList[0]->currentNode = graph->adjList[idx1];
@@ -62,7 +62,7 @@ int main() {
     printf("Agent 'A' placed at (%d,%d), goal is (%d,%d)\n", startX1, startY1, toX1, toY1);
 
     // Dummy agent 2
-    uint startX2 = 2, startY2 = 2, toX2 = 6, toY2 = 4;
+    uint startX2 = 20, startY2 = 0, toX2 = 0, toY2 = 0;
     int idx2 = getIndexFromCords(graph, startX2, startY2);
     agentList[1] = initObject("B", toX2, toY2);
     agentList[1]->currentNode = graph->adjList[idx2];
@@ -79,7 +79,7 @@ int main() {
 
     printMap(graph);
 
-    path_finding(graph, agentList);
+    path_finding(graph, agentList, 3);
 
 
     return 0;

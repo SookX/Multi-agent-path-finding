@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <unistd.h>
+#include <windows.h>
 
 #include "../object/object.h"
 #include "../graph/graph.h"
@@ -51,7 +51,7 @@ void printMap(Graph* graph) {
 
 int minIndex(int* dist, int* visited, int size) {
     int min = INT_MAX;
-    int minIndex;
+    int minIndex = -1;  
 
     for (int v = 0; v < size; v++) {
         if (!visited[v] && dist[v] < min) {
@@ -63,56 +63,112 @@ int minIndex(int* dist, int* visited, int size) {
     return minIndex;
 }
 
-
-void path_finding(Graph* graph, Object** agentList) {
-    // Run A* algorithm for each timestep t
-    // If there are not confilicts continue one step ahead
-    // Else, use priority indexes in hte agentList array, higher priority move first
-    int* visited = (int*)calloc(graph->nodeCount, sizeof(int));
+int* dijkstra(Graph* graph, int startIndex, int goalIndex, int* pathLength) {
     int* dist = (int*)malloc(graph->nodeCount * sizeof(int));
-    int* parent = (int*)calloc(graph->nodeCount, sizeof(int));
-    
-    Object* currentObject = agentList[1];
-    for(int i = 0; i < graph->nodeCount; i++) {
+    int* parent = (int*)malloc(graph->nodeCount * sizeof(int));
+    int* visited = (int*)calloc(graph->nodeCount, sizeof(int));
+
+    for (int i = 0; i < graph->nodeCount; i++) {
         dist[i] = INT_MAX;
+        parent[i] = -1;
     }
-    dist[agentList[1]->currentNode->index] = 0;
-    for(int i = 0; i < graph->nodeCount; i++) {
+    dist[startIndex] = 0;
+
+    for (int i = 0; i < graph->nodeCount; i++) {
         int u = minIndex(dist, visited, graph->nodeCount);
+        if (u == -1) break;
+        if (u == goalIndex) break;  
+
         visited[u] = 1;
 
-        for(int v = 0; v < graph->nodeCount; v++) {
-            if(!visited[v] && hasEdge(graph, u, v) && dist[u] + 1) {  // Every distance has cost of 1
-                dist[v] = dist[u] + 1;
-                parent[v] = u;
-            }
+   for (int v = 0; v < graph->nodeCount; v++) {
+    if (!visited[v] &&
+        hasEdge(graph, u, v) &&
+        graph->adjList[v] != NULL &&
+        dist[u] != INT_MAX) {
+
+        if (graph->adjList[v]->obj != NULL &&
+            v != startIndex &&
+            v != goalIndex) {
+            continue; 
+        }
+
+        if (dist[u] + 1 < dist[v]) {
+            dist[v] = dist[u] + 1;
+            parent[v] = u;
         }
     }
-
-    int toIndex = getIndexFromCords(graph, currentObject->toX, currentObject->toY);
-    int distance = dist[toIndex];
-
-    int* path = (int*)malloc(sizeof(int) * graph->nodeCount);
-    int pathIndex = 0;
-    int currentVertex = toIndex;
-
-    while (currentVertex != currentObject->currentNode->index) {
-            path[pathIndex++] = currentVertex;
-            currentVertex = parent[currentVertex];
+}
     }
-    path[pathIndex++] = currentObject->currentNode->index;
 
-    for (int j = pathIndex - 1; j > 0; j--) {
-        transportNode(graph, path[j], path[j - 1]); ;
-        sleep(1);
-        system("clear");
+    if (dist[goalIndex] == INT_MAX) {
+        free(dist);
+        free(parent);
+        free(visited);
+        *pathLength = 0;
+        return NULL;
+    }
+
+    int capacity = graph->nodeCount;
+    int* path = (int*)malloc(capacity * sizeof(int));
+    int count = 0;
+    for (int current = goalIndex; current != -1; current = parent[current]) {
+        path[count++] = current;
+    }
+
+    for (int i = 0; i < count / 2; i++) {
+        int temp = path[i];
+        path[i] = path[count - 1 - i];
+        path[count - 1 - i] = temp;
+    }
+
+    free(dist);
+    free(parent);
+    free(visited);
+
+    *pathLength = count;
+    return path;
+}
+
+
+
+void path_finding(Graph* graph, Object** agentList, int agentSize) {
+    int allReached;
+
+    while (1) {
+        allReached = 0;
+
+        for (int k = 0; k < agentSize; k++) {
+            Object* currentObject = agentList[k];
+
+            if (currentObject->currentNode->x == currentObject->toX &&
+                currentObject->currentNode->y == currentObject->toY) {
+                allReached++;
+                continue;
+            }
+
+            int startIndex = currentObject->currentNode->index;
+            int goalIndex = getIndexFromCords(graph, currentObject->toX, currentObject->toY);
+
+            int pathLength = 0;
+            int* path = dijkstra(graph, startIndex, goalIndex, &pathLength);
+
+            if (path == NULL || pathLength < 2) {
+                free(path);
+                continue; 
+            }
+
+            printf("\n%s: ", currentObject->name);
+            printf("%d", path[0], path[1]);
+            transportNode(graph, path[0], path[1]);
+            free(path);
+        }
+
+        if (allReached == agentSize)
+            break;
+
+        Sleep(1000);
+        system("cls");
         printMap(graph);
     }
-    printf("\n");
-    free(path);
-    free(visited);
-    free(parent);
- 
-
-
 }

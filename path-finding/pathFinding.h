@@ -5,6 +5,6 @@ typedef struct Graph Graph;
 
 
 void printMap(Graph* graph);
-void path_finding(Graph* graph, Object** agentList);
+void path_finding(Graph* graph, Object** agentList,  int agentSize);
 
 #endif
